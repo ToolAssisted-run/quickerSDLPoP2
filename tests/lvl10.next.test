@@ -1,0 +1,7 @@
+{
+  "Game Path": "",
+  "Start Level": 10,
+  "Seed": 10031,
+  "Initial State File": "states/lvl10.next.state",
+  "Sequence File": "movies/lvl10.next.sol"
+}

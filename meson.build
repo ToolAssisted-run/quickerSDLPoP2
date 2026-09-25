@@ -49,4 +49,5 @@ endif
 # Test movie maker (tests/makeMovies.sh)
 if meson.is_subproject() == false
   makeMovie = executable('makeMovie', 'tools/makeMovie.c', dependencies : [ sdlpop2Dependency ])
+  makeState = executable('makeState', 'tools/makeState.c', dependencies : [ sdlpop2Dependency ])
 endif

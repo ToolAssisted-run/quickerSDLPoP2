@@ -55,6 +55,14 @@ int main(int argc, char *argv[])
   PoP2Instance e(scriptJs);
   e.initialize();
   e.newGame(startLevel, seed);
+  if (scriptJs.contains("Initial State File"))   // (a state made with tools/makeState)
+  {
+    std::string data;
+    if (jaffarCommon::file::loadStringFromFile(data, jaffarCommon::json::getString(scriptJs, "Initial State File")) == false) JAFFAR_THROW_LOGIC("Could not read the initial state file\n");
+    if (data.size() != e.getStateSize()) JAFFAR_THROW_LOGIC("The initial state file has %lu bytes, not %lu\n", data.size(), e.getStateSize());
+    jaffarCommon::deserializer::Contiguous d(data.data(), data.size());
+    e.deserializeState(d);
+  }
   if (scriptJs.contains("RNG Value")) e.setRNGValue(jaffarCommon::json::getNumber<uint32_t>(scriptJs, "RNG Value"));   // (the random seed right after the level loaded, as a capture had it)
 
   std::string sequenceRaw;

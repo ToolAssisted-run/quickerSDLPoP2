@@ -7,6 +7,7 @@
 #include <jaffarCommon/hash.hpp>
 #include <jaffarCommon/json.hpp>
 #include <jaffarCommon/serializers/contiguous.hpp>
+#include <jaffarCommon/deserializers/contiguous.hpp>
 #include <jaffarCommon/string.hpp>
 #include <memory>
 #include <string>
@@ -20,7 +21,16 @@ struct Movie
   int level;
   uint32_t seed;
   std::vector<jaffar::input_t> inputs;
+  std::string state;   // (the initial state file's contents, if any)
 };
+
+static void start(PoP2Instance &e, const Movie &m)
+{
+  e.newGame(m.level, m.seed);
+  if (m.state.empty()) return;
+  jaffarCommon::deserializer::Contiguous d(m.state.data(), m.state.size());
+  e.deserializeState(d);
+}
 
 static jaffarCommon::hash::hash_t hashOf(const PoP2Instance &e)
 {
@@ -42,6 +52,7 @@ int main(int argc, char *argv[])
     m.config["Game Path"] = getenv("POP2_GAME_PATH") ? getenv("POP2_GAME_PATH") : "";
     m.level = m.config["Start Level"].get<int>();
     m.seed = m.config["Seed"].get<uint32_t>();
+    if (m.config.contains("Initial State File")) jaffarCommon::file::loadStringFromFile(m.state, m.config["Initial State File"].get<std::string>());
     std::string seq;
     if (!jaffarCommon::file::loadStringFromFile(seq, m.config["Sequence File"].get<std::string>())) { fprintf(stderr, "cannot read the movie of %s\n", argv[i]); return 2; }
     PoP2Instance parser(m.config);
@@ -56,7 +67,7 @@ int main(int argc, char *argv[])
   {
     PoP2Instance e(m.config);
     e.initialize();
-    e.newGame(m.level, m.seed);
+    start(e, m);
     for (auto &in : m.inputs) e.advanceState(in);
     alone.push_back(hashOf(e));
   }
@@ -75,7 +86,7 @@ int main(int argc, char *argv[])
     threads.emplace_back([&, i]() {
       auto &m = movies[i % movies.size()];
       auto &e = *instances[i];
-      e.newGame(m.level, m.seed);
+      start(e, m);
       for (auto &in : m.inputs) e.advanceState(in);
       together[i] = hashOf(e);
     });
@@ -87,8 +98,8 @@ int main(int argc, char *argv[])
   {
     PoP2Instance a(movies[i].config), b(movies[i + 1].config);
     a.initialize(); b.initialize();
-    a.newGame(movies[i].level, movies[i].seed);
-    b.newGame(movies[i + 1].level, movies[i + 1].seed);
+    start(a, movies[i]);
+    start(b, movies[i + 1]);
     const size_t len = std::max(movies[i].inputs.size(), movies[i + 1].inputs.size());
     for (size_t k = 0; k < len; k++)
     {

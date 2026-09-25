@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <core.h>
 
 extern uint8_t Kid[];   /* (the prince's record: +0x11 alive, < 0 while alive) */
@@ -23,6 +24,11 @@ int main(int argc, char **argv)
 	if (!pop2_init(argv[1])) { fprintf(stderr, "cannot load the game from %s\n", argv[1]); return 1; }
 	int level = atoi(argv[2]); uint32_t seed = (uint32_t)strtoul(argv[3], NULL, 10); int ticks = atoi(argv[4]);
 	pop2_new_game(level, seed); rng = seed ^ 0x9E3779B9u;
+	if (getenv("MAKEMOVIE_STATE")) {   /* a starting state (makeState) */
+		FILE *f = fopen(getenv("MAKEMOVIE_STATE"), "rb"); size_t n = pop2_state_size(); void *b = malloc(n);
+		if (!f || fread(b, 1, n, f) != n) { fprintf(stderr, "cannot read the state\n"); return 1; }
+		fclose(f); pop2_load(b); free(b);
+	}
 	if (argc > 5) {
 		FILE *f = fopen(argv[5], "r"); if (!f) { fprintf(stderr, "cannot read %s\n", argv[5]); return 1; }
 		int x, y, s;
