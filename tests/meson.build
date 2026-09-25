@@ -13,3 +13,7 @@ foreach script : testScripts
     )
   endforeach
 endforeach
+
+# every movie on many threads at once, and interleaved on one thread
+test('threads', threadTester, args : testScripts, env : [ 'POP2_GAME_PATH=' + get_option('gamePath') ],
+  workdir : meson.current_source_dir(), timeout : 1200, suite : 'threads')

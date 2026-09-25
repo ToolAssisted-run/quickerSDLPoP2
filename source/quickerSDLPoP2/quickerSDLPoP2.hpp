@@ -565,6 +565,11 @@ class QuickerSDLPoP2 : public QuickerSDLPoP2State
 {
 public:
 
+  // (the buffers SDLPoP2 allocates once per program are one per instance here)
+  ~QuickerSDLPoP2() { free(pop2_reset_state__zero); free(state_hash__buf); }
+  QuickerSDLPoP2() = default;
+  QuickerSDLPoP2(const QuickerSDLPoP2 &) = delete;
+  QuickerSDLPoP2 &operator=(const QuickerSDLPoP2 &) = delete;
   // Loads the game's files from the folder with PRINCE.EXE; false if one is missing
   bool initialize(const std::string &gamePath) { return pop2_init(gamePath.c_str()) != 0; }
 
@@ -605,7 +610,7 @@ uint8_t cheat_fly_key{};   // cheats.c
 int coll_debug{};   // collision.c
 const int8_t wall_left_tbl[10]  = {0, 25, 0, -14, 2, 12, 6, 0, 10, 0};   // collision.c
 const int8_t wall_right_tbl[10] = {0, 0, 31, -14, 0, 0, 10, 0, 15, 0};   // collision.c
-uint8_t ram[655360]{};   // core.c
+uint8_t ram_ds[0x10000]{};   // core.c
 uint8_t *pop2_reset_state__zero{};   // core.c
 const uint8_t char_dies__music[10] = {0, 2, 2, 2, 0x11, 6, 6, 2, 0xC, 7};   // fight.c
 const uint8_t *frame_table_kid{};   // frame.c
@@ -2594,8 +2599,8 @@ int pop2_init(const char *dir)
 	snprintf(p, sizeof p, "%s/PRINCE.EXE", dir);
 	/* the data segment as the program starts: PRINCE.EXE's initialised data (file 0x3CE40 = DS:0), the rest zero */
 	FILE *f = fopen(p, "rb"); if (!f) return 0;
-	fseek(f, 0x3CE40, SEEK_SET); size_t n = fread(ram + 0x3B250, 1, 0x27BF, f); fclose(f); if (n != 0x27BF) return 0;
-	glue_load_exe_tables(p); glue_load_ds_tables(ram);
+	fseek(f, 0x3CE40, SEEK_SET); size_t n = fread(ram_ds, 1, 0x27BF, f); fclose(f); if (n != 0x27BF) return 0;
+	glue_load_exe_tables(p); glue_load_ds_tables(ram_ds);
 	return 1;
 }
 /* the program's memory as it starts: zeroes, then PRINCE.EXE's initialised data (the shell starts from here too) */
@@ -2603,7 +2608,7 @@ void pop2_reset_state(void)
 {
 	 size_t n = state_size();
 	if (!pop2_reset_state__zero) pop2_reset_state__zero = (uint8_t *)calloc(1, n);
-	state_load(pop2_reset_state__zero); state_load_ds_statics(ram + 0x3B250);
+	state_load(pop2_reset_state__zero); state_load_ds_statics(ram_ds);
 }
 void pop2_new_game_loaded(int lv, uint32_t seed)   /* up to the level load (169B:00F5) */
 {
@@ -3778,9 +3783,9 @@ level_char_init *ovl_36ada(level_char_init *r) { note(" 36ada?"); return r; }
 void ovl_36712(void) { note(" 36712"); }
  void room_music_087e(void) {}
 void glue_load_ds_tables(const uint8_t *ram)   /* DS:0096 type->charid, DS:00A2 charid->type (data) */
-{ memcpy(ds_img, ram + 0x3B250, 0x10000); memcpy(dstables, ram + 0x3B250 + 0x96, 0x20); type_to_charid = dstables; charid_to_type = dstables + 0x0C; guard_set_prob_tables(ram + 0x3B250); mobs_set_tables(ram + 0x3B250); caverns_set_tables(ram + 0x3B250); heads_set_tables(ram + 0x3B250); blades_set_tables(ram + 0x3B250); byte_016a = (int8_t)ram[0x3B250 + 0x16A]; byte_14a0 = ram[0x3B250 + 0x14A0]; byte_0670 = ram[0x3B250 + 0x670]; cheat_mode = ram[0x3B250 + 0x10C2] | ram[0x3B250 + 0x10C3] << 8; word_0366 = ram[0x3B250 + 0x366] | ram[0x3B250 + 0x367] << 8;; fireball_width = (int16_t)(ram[0x3B250 + 0x842] | ram[0x3B250 + 0x843] << 8);   /* outside the snapshot window */ for (int i = 0; i < 16; i++) refract_tbl[i] = ram[0x3B250 + 0x13D0 + 2 * i] | ram[0x3B250 + 0x13D1 + 2 * i] << 8; refract_timer = refract_tbl;
-  for (int i = 0; i < 8; i++) { uint16_t p = ram[0x3B250 + 0x6BC + 2 * i] | ram[0x3B250 + 0x6BD + 2 * i] << 8; guard_bank2[i] = p ? (ram[0x3B250 + p] | ram[0x3B250 + p + 1] << 8) : 0;
-    env_bank2[i] = (int16_t)(ram[0x3B250 + 0x5AC + 2 * i] | ram[0x3B250 + 0x5AD + 2 * i] << 8); } }
+{ memcpy(ds_img, ram, 0x10000); memcpy(dstables, ram + 0x96, 0x20); type_to_charid = dstables; charid_to_type = dstables + 0x0C; guard_set_prob_tables(ram); mobs_set_tables(ram); caverns_set_tables(ram); heads_set_tables(ram); blades_set_tables(ram); byte_016a = (int8_t)ram[0x16A]; byte_14a0 = ram[0x14A0]; byte_0670 = ram[0x670]; cheat_mode = ram[0x10C2] | ram[0x10C3] << 8; word_0366 = ram[0x366] | ram[0x367] << 8;; fireball_width = (int16_t)(ram[0x842] | ram[0x843] << 8);   /* outside the snapshot window */ for (int i = 0; i < 16; i++) refract_tbl[i] = ram[0x13D0 + 2 * i] | ram[0x13D1 + 2 * i] << 8; refract_timer = refract_tbl;
+  for (int i = 0; i < 8; i++) { uint16_t p = ram[0x6BC + 2 * i] | ram[0x6BD + 2 * i] << 8; guard_bank2[i] = p ? (ram[p] | ram[p + 1] << 8) : 0;
+    env_bank2[i] = (int16_t)(ram[0x5AC + 2 * i] | ram[0x5AD + 2 * i] << 8); } }
 /* guard.c / play_all_chars stubs */
 
 void ovl_366c_e0a(void) { if (level_kind == 4) heads_ai(); else note(" e0a?"); }

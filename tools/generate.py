@@ -31,7 +31,7 @@ HEADERS = 'types globals glue state dat core text settings'.split()
 # the savestate's layout: state.c's tables in order, then the checkpoint copy (level.c `cp`) and core.c's `scene`
 STATE_EXTRA_TAIL = ['cp', 'scene']
 
-from overrides import OVERRIDES, STUBS, DROP, MEMBER_EXTRA, API, PATCHES, TYPE_PATCHES  # noqa: E402
+from overrides import OVERRIDES, STUBS, DROP, MEMBER_EXTRA, API, PATCHES, TYPE_PATCHES, FILE_PATCHES  # noqa: E402
 
 IDENT = re.compile(r'[A-Za-z_]\w*')
 
@@ -342,7 +342,12 @@ def main():
     # sources: split, find the statics that clash between files
     statics = {}
     for f in LOGIC:
-        its = csplit.split(read(f + '.c'))
+        src = read(f + '.c')
+        for a, b in FILE_PATCHES.get(f, []):
+            if a not in src:
+                raise SystemExit('file patch for %s.c does not apply (SDLPoP2 changed?): %r' % (f, a))
+            src = src.replace(a, b)
+        its = csplit.split(src)
         file_items[f] = its
         for it in its:
             s = csplit.strip_comments(it.text).strip()

@@ -33,6 +33,12 @@ if meson.is_subproject() == false
     dependencies : [ jaffarCommonDependency, sdlpop2Dependency, oracleDependency ],
   )
 
+  threadTester = executable('threadTester',
+    'source/threadTester.cpp',
+    cpp_args : [ commonCompileArgs ],
+    dependencies : [ jaffarCommonDependency, quickerSDLPoP2Dependency, dependency('threads') ],
+  )
+
   # The movie tests (they need the game's files: -DgamePath=...)
   if get_option('gamePath') != ''
     subdir('tests')

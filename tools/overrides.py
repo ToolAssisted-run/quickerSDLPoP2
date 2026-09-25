@@ -2,6 +2,11 @@
 
 # the public interface (inside the class)
 API = r'''
+  // (the buffers SDLPoP2 allocates once per program are one per instance here)
+  ~QuickerSDLPoP2() { free(pop2_reset_state__zero); free(state_hash__buf); }
+  QuickerSDLPoP2() = default;
+  QuickerSDLPoP2(const QuickerSDLPoP2 &) = delete;
+  QuickerSDLPoP2 &operator=(const QuickerSDLPoP2 &) = delete;
   // Loads the game's files from the folder with PRINCE.EXE; false if one is missing
   bool initialize(const std::string &gamePath) { return pop2_init(gamePath.c_str()) != 0; }
 
@@ -134,3 +139,15 @@ TYPE_PATCHES = [
     # the savestate keeps 7 bytes of cur_frame (its padding byte is never used): the type is 7 bytes here
     ('typedef struct frame_type {', 'typedef struct __attribute__((packed)) frame_type {'),
 ]
+
+# changes to whole source files before they are split: {file: [(old, new)]}
+FILE_PATCHES = {
+    # the program's memory image (640 KB) only ever holds the data segment (DS at 0x3B250, 64 KB): keep that only
+    'core': [
+        ('static uint8_t ram[655360];', 'static uint8_t ram_ds[0x10000];'),
+        ('fread(ram + 0x3B250, 1, 0x27BF, f)', 'fread(ram_ds, 1, 0x27BF, f)'),
+        ('glue_load_ds_tables(ram);', 'glue_load_ds_tables(ram_ds);'),
+        ('state_load_ds_statics(ram + 0x3B250);', 'state_load_ds_statics(ram_ds);'),
+    ],
+    'glue': [('ram + 0x3B250', 'ram'), ('ram[0x3B250 + ', 'ram[')],
+}
