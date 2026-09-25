@@ -201,22 +201,22 @@ typedef struct gport {           /* 0x2C bytes in the original (template DS:247E
 	uint16_t font;               /* +2A: FONT resource id */
 	uint8_t own;                 /* the bitmap was allocated by port_new */
 } gport;
-enum { SCALING_SHARP, SCALING_FUZZY, SCALING_BLURRY };
-enum { SOUND_DEVICE_SPEAKER = 0, SOUND_DEVICE_DIGITAL = 1, SOUND_DEVICE_FM = 2, SOUND_DEVICE_FM_DIGITAL = 3 };
-enum { KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, KEY_UPLEFT, KEY_UPRIGHT, KEY_DOWNLEFT, KEY_DOWNRIGHT, KEY_SHIFT, KEY_CTRL, KEY_COUNT };
-enum { BUTTON_UP, BUTTON_DOWN, BUTTON_SHIFT, BUTTON_CTRL, BUTTON_MENU, BUTTON_RESTART, BUTTON_QUICKSAVE, BUTTON_QUICKLOAD,
-       BUTTON_TIME, BUTTON_INFO, BUTTON_COUNT };
+enum { POP2_SCALING_SHARP, POP2_SCALING_FUZZY, POP2_SCALING_BLURRY };
+enum { POP2_SOUND_DEVICE_SPEAKER = 0, POP2_SOUND_DEVICE_DIGITAL = 1, POP2_SOUND_DEVICE_FM = 2, POP2_SOUND_DEVICE_FM_DIGITAL = 3 };
+enum { POP2_KEY_LEFT, POP2_KEY_RIGHT, POP2_KEY_UP, POP2_KEY_DOWN, POP2_KEY_UPLEFT, POP2_KEY_UPRIGHT, POP2_KEY_DOWNLEFT, POP2_KEY_DOWNRIGHT, POP2_KEY_SHIFT, POP2_KEY_CTRL, POP2_KEY_COUNT };
+enum { POP2_BUTTON_UP, POP2_BUTTON_DOWN, POP2_BUTTON_SHIFT, POP2_BUTTON_CTRL, POP2_BUTTON_MENU, POP2_BUTTON_RESTART, POP2_BUTTON_QUICKSAVE, POP2_BUTTON_QUICKLOAD,
+       POP2_BUTTON_TIME, POP2_BUTTON_INFO, POP2_BUTTON_COUNT };
 typedef struct pop2_settings {
 	/* [General] (the frontend) */
 	int start_fullscreen;
 	int window_width, window_height;          /* 0: auto */
 	int use_correct_aspect_ratio;             /* 1: 4:3 (mode 13h on a CRT) */
 	int use_integer_scaling;
-	int scaling_type;                         /* SCALING_* */
+	int scaling_type;                         /* POP2_SCALING_* */
 	int enable_music, enable_sounds;
 	int volume;                               /* 0..15: what "sound on" (the game's 15) plays at */
-	int sound_device;                         /* SOUND_DEVICE_* (audio_init's caps) */
-	char keys[KEY_COUNT][32];                 /* SDL scancode names ("Left", "Left Shift", ...) */
+	int sound_device;                         /* POP2_SOUND_DEVICE_* (audio_init's caps) */
+	char keys[POP2_KEY_COUNT][32];                 /* SDL scancode names ("Left", "Left Shift", ...) */
 	int enable_pause_menu;                    /* Esc (and the controller's menu button) opens the overlay menu (SDLPoP's) */
 	/* [General], read by the shell (recorded in replays) */
 	int enable_intro, enable_story_scenes, skip_title;
@@ -233,7 +233,7 @@ typedef struct pop2_settings {
 	int joystick_threshold;                   /* 0..32767: the analog dead zone */
 	int joystick_only_horizontal;             /* the stick gives left / right only (the D-pad all eight) */
 	char gamecontrollerdb_file[256];          /* extra SDL controller mappings ("" none) */
-	char buttons[BUTTON_COUNT][64];           /* SDL game controller button names, space separated ("none": no button) */
+	char buttons[POP2_BUTTON_COUNT][64];           /* SDL game controller button names, space separated ("none": no button) */
 	/* [CustomGameplay] (the core and the shell) */
 	int start_minutes_left;                   /* 75 (169B:0006) */
 	int ticks_per_minute;                     /* 719 = 0x2CF (DS:5CEA) */
@@ -8098,5 +8098,42 @@ void sound_res_start(uint16_t res) { }
 static_assert(sizeof(waypoint) == 13, "waypoint");
 
 } // namespace quicker
+
+// (the macros only serve the class above: none leaks into the code that includes this header)
+#undef DBG
+#undef FALL_X_MAX
+#undef FALL_Y_MAX
+#undef GAME_SETTING
+#undef GOD_KID
+#undef K
+#undef LV
+#undef NSND
+#undef NX
+#undef ROOM_ATTRS
+#undef ROOM_REC
+#undef ROOM_TILES
+#undef SETTINGS_LEVELS
+#undef SETTINGS_SKILLS
+#undef SKILL_PROB
+#undef SWORD_NONE
+#undef amb_cur
+#undef anim_attrs
+#undef anim_tiles
+#undef frame_dx
+#undef frame_flags
+#undef level_links
+#undef plank_at
+#undef sword_table
+#undef word_2ba4
+#undef word_2ba8
+#undef word_2bae
+#undef word_2bb0
+#undef word_2bb2
+#undef word_2bb4
+#undef word_4400
+#undef word_4406
+#undef word_440a
+#undef word_693e
+#undef word_6d54
 
 #pragma GCC diagnostic pop

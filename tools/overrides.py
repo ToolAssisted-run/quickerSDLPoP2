@@ -136,6 +136,8 @@ STUBS = {
 
 # changes to type definitions: [(old, new)]
 TYPE_PATCHES = [
+    # settings.h's frontend names (keys, buttons, scaling, sound devices) would clash with ncurses' macros (KEY_UP...)
+    ('KEY_', 'POP2_KEY_'), ('BUTTON_', 'POP2_BUTTON_'), ('SCALING_', 'POP2_SCALING_'), ('SOUND_DEVICE_', 'POP2_SOUND_DEVICE_'),
     # the savestate keeps 7 bytes of cur_frame (its padding byte is never used): the type is 7 bytes here
     ('typedef struct frame_type {', 'typedef struct __attribute__((packed)) frame_type {'),
 ]

@@ -512,7 +512,11 @@ def main():
     o.append('\n};   // class QuickerSDLPoP2\n\n')
     for a in asserts:
         o.append(a + '\n')
-    o.append('\n} // namespace quicker\n\n#pragma GCC diagnostic pop\n')
+    o.append('\n} // namespace quicker\n\n')
+    o.append('// (the macros only serve the class above: none leaks into the code that includes this header)\n')
+    for m in sorted(defined_macros):
+        o.append('#undef %s\n' % m)
+    o.append('\n#pragma GCC diagnostic pop\n')
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     open(OUT, 'w').write(''.join(o))
     print('wrote', OUT, '(%d functions, %d member declarations, %d state fields, %d renamed statics)' %
