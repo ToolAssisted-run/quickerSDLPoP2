@@ -19,6 +19,23 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
+#pragma GCC diagnostic ignored "-Wnarrowing"
+#pragma GCC diagnostic ignored "-Waddress-of-packed-member"
+#pragma GCC diagnostic ignored "-Wmisleading-indentation"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wunused-function"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+#pragma GCC diagnostic ignored "-Wparentheses"
+#pragma GCC diagnostic ignored "-Wchar-subscripts"
+#pragma GCC diagnostic ignored "-Wtype-limits"
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#pragma GCC diagnostic ignored "-Wclass-memaccess"
 
 namespace quicker
 {
@@ -56,6 +73,7 @@ namespace quicker
 #define word_693e (*(int16_t *)&bridge_693e[0])   /* DS:693E: 0 waiting, 1..3 starting, -1 done */
 #define plank_at (bridge_693e + 1)                /* DS:693F + column: a plank fell there (1 small, 2 big) */
 #define DBG(...) fprintf(stderr, __VA_ARGS__)
+#undef DBG
 #define DBG(...)
 #define word_2bb4 (*(uint16_t *)(tiles0 + 0x1A))   /* DS:2BB4: room 8 was reached with the sounds on */
 #define word_4400 (*(uint16_t *)((uint8_t *)&level + 0x1848))   /* DS:4400 level header */

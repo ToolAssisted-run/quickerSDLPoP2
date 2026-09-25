@@ -459,9 +459,20 @@ def main():
     o.append('// SDLPoP2 is (C) 2026 Sergio Martin and the SDLPoP2 contributors, GPL-3.0-or-later.\n\n')
     o.append('#pragma once\n\n#include <cstdint>\n#include <cstdio>\n#include <cstdlib>\n#include <cstring>\n#include <cctype>\n#include <map>\n#include <memory>\n#include <mutex>\n#include <string>\n#include <vector>\n')
     o.append('#include <jaffarCommon/serializers/base.hpp>\n#include <jaffarCommon/deserializers/base.hpp>\n\n')
-    o.append('#pragma GCC diagnostic push\n#pragma GCC diagnostic ignored "-Wpedantic"\n\nnamespace quicker\n{\n\n')
+    o.append('#pragma GCC diagnostic push\n')
+    for w in ('-Wpedantic', '-Wnarrowing', '-Waddress-of-packed-member', '-Wmisleading-indentation', '-Wunused-variable',
+              '-Wunused-but-set-variable', '-Wunused-function', '-Wunused-parameter', '-Wsign-compare', '-Wparentheses',
+              '-Wchar-subscripts', '-Wtype-limits', '-Wimplicit-fallthrough', '-Wmissing-field-initializers', '-Wstringop-truncation', '-Wformat-truncation', '-Wmaybe-uninitialized', '-Wclass-memaccess'):
+        o.append('#pragma GCC diagnostic ignored "%s"\n' % w)
+    o.append('\nnamespace quicker\n{\n\n')
     o.append('// ---- macros\n')
+    defined_macros = set()
     for m in macros:
+        dm = re.match(r'\s*#\s*define\s+(\w+)', csplit.strip_comments(m).strip())
+        if dm and dm.group(1) in defined_macros:
+            o.append('#undef %s\n' % dm.group(1))   # (defined again by another file)
+        if dm:
+            defined_macros.add(dm.group(1))
         o.append(m.strip('\n') + '\n')
     o.append('// ---- types\n')
     for t in types:

@@ -1,0 +1,35 @@
+name: CI
+
+# Builds the core, its testers and the thread test, and checks that quickerSDLPoP2.hpp is what tools/generate.py
+# makes from the SDLPoP2 submodule. The movie tests need the game's files (not public): run them where they are
+# (meson setup build -DgamePath=...).
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends meson ninja-build pkg-config libtbb-dev libncurses-dev python3
+    - name: The header is up to date
+      run: |
+        python3 tools/generate.py
+        git diff --exit-code source/quickerSDLPoP2/quickerSDLPoP2.hpp
+    - name: Build
+      run: |
+        meson setup build
+        meson compile -C build
+    - name: The header compiles cleanly on its own
+      run: |
+        echo '#include "quickerSDLPoP2.hpp"' > t.cpp
+        g++ -std=c++20 -fsyntax-only -Wall -Wextra -Werror '-D__JAFFAR_COMMON_INLINE__=inline' -Isource/quickerSDLPoP2 -Iextern/jaffarCommon/include -Iextern/jaffarCommon/third_party t.cpp
