@@ -26,7 +26,7 @@ public:
   void deserializeState(jaffarCommon::deserializer::Base &deserializer) override { _emu->loadState(deserializer); }
   size_t getStateSize() const override { return _emu->stateSize(); }
 
-  int getLevel() const override { return _emu->level(); }
+  int getLevel() const override { return _emu->getLevel(); }
   void setRNGValue(const uint32_t seed) override { _emu->setRandomSeed(seed); }
   std::string getCoreName() const override { return "quickerSDLPoP2"; }
 

@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
   PoP2Instance e(scriptJs);
   e.initialize();
   e.newGame(startLevel, seed);
+  if (scriptJs.contains("RNG Value")) e.setRNGValue(jaffarCommon::json::getNumber<uint32_t>(scriptJs, "RNG Value"));   // (the random seed right after the level loaded, as a capture had it)
 
   std::string sequenceRaw;
   if (jaffarCommon::file::loadStringFromFile(sequenceRaw, sequenceFilePath) == false) JAFFAR_THROW_LOGIC("Could not find or read from input sequence file: %s\n", sequenceFilePath.c_str());
