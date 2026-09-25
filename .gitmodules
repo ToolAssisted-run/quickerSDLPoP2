@@ -1,0 +1,6 @@
+[submodule "extern/SDLPoP2"]
+	path = extern/SDLPoP2
+	url = https://github.com/ToolAssisted-run/SDLPoP2.git
+[submodule "extern/jaffarCommon"]
+	path = extern/jaffarCommon
+	url = https://github.com/ToolAssisted-run/jaffarCommon.git

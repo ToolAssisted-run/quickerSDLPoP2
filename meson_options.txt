@@ -1,0 +1,5 @@
+option('gamePath',
+  type : 'string',
+  value : '',
+  description : 'Folder with the DOS game files (PRINCE.EXE, *.DAT). Empty: the movie tests are not registered.',
+)
