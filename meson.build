@@ -8,6 +8,11 @@ project('quickerSDLPoP2', 'c', 'cpp',
 # The core: one header (source/quickerSDLPoP2/quickerSDLPoP2.hpp) plus its JaffarPlus-facing instance
 subdir('source')
 
+# SDLPoP2 itself, from the SDLPoP2 submodule: the tests' oracle, and the drawing for a parent project that shows the
+# game (JaffarPlus's player: shell_draw_state)
+sdlpop2Subproject = subproject('SDLPoP2')
+sdlpop2Dependency = sdlpop2Subproject.get_variable('sdlpop2Dependency')
+
 # Do not build any targets if this is a subproject
 if meson.is_subproject() == false
 
@@ -15,10 +20,6 @@ if meson.is_subproject() == false
 
   jaffarCommonSubproject = subproject('jaffarCommon')
   jaffarCommonDependency = jaffarCommonSubproject.get_variable('jaffarCommonDependency')
-
-  # The oracle: SDLPoP2's own core, from the SDLPoP2 submodule
-  sdlpop2Subproject = subproject('SDLPoP2')
-  sdlpop2Dependency = sdlpop2Subproject.get_variable('sdlpop2Dependency')
 
   # Tester programs: the same source, once per core
   quickerSDLPoP2Tester = executable('quickerSDLPoP2Tester',
