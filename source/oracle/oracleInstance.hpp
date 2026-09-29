@@ -28,7 +28,7 @@ public:
 
   void advanceState(const jaffar::input_t &input) override
   {
-    pop2_input in = {input.x, input.y, input.shift, (uint8_t)input.keystroke};
+    pop2_input in = {input.x, input.y, input.shift, (uint8_t)input.keystroke, (uint8_t)input.restartLevel};
     pop2_frame(&in);
   }
 

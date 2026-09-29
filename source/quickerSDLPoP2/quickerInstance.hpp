@@ -20,7 +20,7 @@ public:
 
   void newGame(const int level, const uint32_t seed) override { _emu->newGame(level, seed); }
 
-  void advanceState(const jaffar::input_t &input) override { _emu->advance(input.x, input.y, input.shift, input.keystroke); }
+  void advanceState(const jaffar::input_t &input) override { _emu->advance(input.x, input.y, input.shift, input.keystroke, input.restartLevel); }
 
   void serializeState(jaffarCommon::serializer::Base &serializer) const override { _emu->saveState(serializer); }
   void deserializeState(jaffarCommon::deserializer::Base &deserializer) override { _emu->loadState(deserializer); }
