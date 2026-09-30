@@ -603,9 +603,9 @@ public:
   QuickerSDLPoP2(const QuickerSDLPoP2 &) = delete;
   QuickerSDLPoP2 &operator=(const QuickerSDLPoP2 &) = delete;
   // Loads the game's files from the folder with PRINCE.EXE; false if one is missing or they do not fit the release asked
-  // for (initError says why). gameVersion: the DOS release to play, -1 the one the files are (0 1.1, 1 1.0, 2 the
-  // initial release); the initial release needs its own data files, 1.0 and 1.1 share theirs
-  bool initialize(const std::string &gamePath, const int gameVersion = -1)
+  // for (initError says why). gameVersion: the DOS release to play, 0 1.1, 1 1.0, 2 the initial release (never taken
+  // from the files); the initial release needs its own data files, 1.0 and 1.1 share theirs
+  bool initialize(const std::string &gamePath, const int gameVersion)
   {
     pop2_set_game_version(gameVersion);
     return pop2_init(gamePath.c_str()) != 0;

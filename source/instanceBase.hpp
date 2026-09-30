@@ -18,17 +18,13 @@ public:
   PoP2InstanceBase(const nlohmann::json &config)
   {
     _gamePath    = jaffarCommon::json::getString(config, "Game Path");
-    // "Game Version" (optional): the DOS release to play, "1.1", "1.0" or "IR" (the initial release); "Auto" (the
-    // default) plays the release the game's files are
-    if (config.contains("Game Version"))
-    {
-      const auto v = jaffarCommon::json::getString(config, "Game Version");
-      if (v == "Auto") _gameVersion = -1;
-      else if (v == "1.1") _gameVersion = 0;
-      else if (v == "1.0") _gameVersion = 1;
-      else if (v == "IR") _gameVersion = 2;
-      else JAFFAR_THROW_LOGIC("Game Version '%s' is not Auto, 1.1, 1.0 or IR\n", v.c_str());
-    }
+    // "Game Version": the DOS release to play, "1.1", "1.0" or "IR" (the initial release) - chosen, never taken from
+    // the game's files (the files must be that release's: IR's own, or 1.0 / 1.1's shared ones)
+    const auto v = jaffarCommon::json::getString(config, "Game Version");
+    if (v == "1.1") _gameVersion = 0;
+    else if (v == "1.0") _gameVersion = 1;
+    else if (v == "IR") _gameVersion = 2;
+    else JAFFAR_THROW_LOGIC("Game Version '%s' is not 1.1, 1.0 or IR\n", v.c_str());
     _inputParser = std::make_unique<jaffar::InputParser>(config);
   }
 
@@ -58,7 +54,7 @@ public:
 protected:
 
   std::string _gamePath;
-  int _gameVersion = -1; // POP2_VER_*: -1 the game files' own, 0 1.1, 1 1.0, 2 the initial release
+  int _gameVersion = 0; // POP2_VER_*: 0 1.1, 1 1.0, 2 the initial release
 
 private:
 

@@ -17,6 +17,7 @@ for lv in $(seq 1 14); do
 		cat > lvl$n.$kind.test <<EOF
 {
   "Game Path": "",
+  "Game Version": "1.1",
   "Start Level": $lv,
   "Seed": $s,
   "Sequence File": "movies/lvl$n.$kind.sol"

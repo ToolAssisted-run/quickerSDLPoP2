@@ -13,6 +13,7 @@ make1() {   # NAME LEVEL SEED TICKS OPS...
 	cat > $name.test <<EOF
 {
   "Game Path": "",
+  "Game Version": "1.1",
   "Start Level": $lv,
   "Seed": $seed,
   "Initial State File": "states/$name.state",

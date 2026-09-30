@@ -21,6 +21,7 @@ static void emit(const pop2_input *in)
 int main(int argc, char **argv)
 {
 	if (argc < 5) { fprintf(stderr, "usage: makeMovie GAME_DIR LEVEL SEED TICKS [PLAN]\n"); return 2; }
+	pop2_set_game_version(0);   /* 1.1: the test movies are 1.1's */
 	if (!pop2_init(argv[1])) { fprintf(stderr, "cannot load the game from %s\n", argv[1]); return 1; }
 	int level = atoi(argv[2]); uint32_t seed = (uint32_t)strtoul(argv[3], NULL, 10); int ticks = atoi(argv[4]);
 	pop2_new_game(level, seed); rng = seed ^ 0x9E3779B9u;

@@ -19,7 +19,7 @@ You need your own copy of the original game's files (DOS version 1.0).
     game.newGame(1, seed);                // level 1..14, a random seed
     game.advance(1, 0, 0, false);         // one tick: right held (x, y, Shift/Ctrl, a key pressed)
 
-`initialize` takes the DOS release to play as a second argument: -1 (the default) the release the files are, 0 1.1, 1 1.0, 2 the initial release, which needs its own files (1.0 and 1.1 share theirs). The JaffarPlus instance reads it from `"Game Version"`: `"Auto"`, `"1.1"`, `"1.0"` or `"IR"`.
+`initialize` takes the DOS release to play as a second argument, always chosen, never taken from the files: 0 1.1, 1 1.0, 2 the initial release, which needs its own files (1.0 and 1.1 share theirs). The JaffarPlus instance reads it from `"Game Version"`, which it requires: `"1.1"`, `"1.0"` or `"IR"`.
 
 A savestate is the `QuickerSDLPoP2State` part of the object: 23,448 bytes, byte for byte the same as SDLPoP2's own savestate. `saveState` and `loadState` take jaffarCommon's serializers.
 

@@ -1,5 +1,6 @@
 {
   "Game Path": "",
+  "Game Version": "1.1",
   "Start Level": 5,
   "Seed": 5301,
   "Initial State File": "states/lvl05.onbridge.state",
