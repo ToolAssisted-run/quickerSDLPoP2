@@ -598,7 +598,7 @@ public:
   void newGame(const int lv, const uint32_t seed) { pop2_new_game(lv, seed); }
 
   // One game tick: x / y -1..1 (left / up negative), shift 1 Shift or 2 Ctrl, keystroke: a key was pressed,
-  // restartLevel: the key was Alt+A (the level starts again, from its checkpoint)
+  // restartLevel: Restart Level (the game's Alt+A: the level starts again, from its checkpoint)
   void advance(const int8_t x, const int8_t y, const uint8_t shift, const bool keystroke, const bool restartLevel = false)
   {
     pop2_input in = {x, y, shift, (uint8_t)keystroke, (uint8_t)restartLevel};
