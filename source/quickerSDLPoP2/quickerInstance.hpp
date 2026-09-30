@@ -15,7 +15,8 @@ public:
 
   void initialize() override
   {
-    if (_emu->initialize(_gamePath) == false) JAFFAR_THROW_LOGIC("Could not load the game files from '%s'\n", _gamePath.c_str());
+    if (_emu->initialize(_gamePath, _gameVersion) == false)
+      JAFFAR_THROW_LOGIC("Could not load the game files from '%s'%s%s\n", _gamePath.c_str(), _emu->initError() ? ": " : "", _emu->initError() ? _emu->initError() : "");
   }
 
   void newGame(const int level, const uint32_t seed) override { _emu->newGame(level, seed); }

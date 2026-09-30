@@ -20,7 +20,9 @@ public:
 
   void initialize() override
   {
-    if (pop2_init(_gamePath.c_str()) == 0) JAFFAR_THROW_LOGIC("Could not load the game files from '%s'\n", _gamePath.c_str());
+    pop2_set_game_version(_gameVersion);
+    if (pop2_init(_gamePath.c_str()) == 0)
+      JAFFAR_THROW_LOGIC("Could not load the game files from '%s'%s%s\n", _gamePath.c_str(), pop2_init_error() ? ": " : "", pop2_init_error() ? pop2_init_error() : "");
     _stateSize = pop2_state_size();
   }
 

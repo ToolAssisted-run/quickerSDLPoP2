@@ -7,8 +7,16 @@ API = r'''
   QuickerSDLPoP2() = default;
   QuickerSDLPoP2(const QuickerSDLPoP2 &) = delete;
   QuickerSDLPoP2 &operator=(const QuickerSDLPoP2 &) = delete;
-  // Loads the game's files from the folder with PRINCE.EXE; false if one is missing
-  bool initialize(const std::string &gamePath) { return pop2_init(gamePath.c_str()) != 0; }
+  // Loads the game's files from the folder with PRINCE.EXE; false if one is missing or they do not fit the release asked
+  // for (initError says why). gameVersion: the DOS release to play, -1 the one the files are (0 1.1, 1 1.0, 2 the
+  // initial release); the initial release needs its own data files, 1.0 and 1.1 share theirs
+  bool initialize(const std::string &gamePath, const int gameVersion = -1)
+  {
+    pop2_set_game_version(gameVersion);
+    return pop2_init(gamePath.c_str()) != 0;
+  }
+  // Why initialize failed when no file was missing (NULL otherwise)
+  const char *initError() { return pop2_init_error(); }
 
   // A new game at the given level (1: the start; 2..14 as the DOS game's LEVELn) with the given random seed
   void newGame(const int lv, const uint32_t seed) { pop2_new_game(lv, seed); }
@@ -81,6 +89,8 @@ PATCHES = {
     'pop2_save': [('state_save(buf)', 'state_save((uint8_t *)buf)')],
     'pop2_load': [('state_load(buf)', 'state_load((const uint8_t *)buf)')],
     'state_hash': [('= malloc(n)', '= (uint8_t *)malloc(n)')],
+    'glue_load_exe_tables': [('uint8_t *e = malloc((size_t)n)', 'uint8_t *e = (uint8_t *)malloc((size_t)n)')],
+    'version_load_exe': [('n > 0 ? malloc((size_t)n) : NULL', 'n > 0 ? (uint8_t *)malloc((size_t)n) : NULL')],
     # (C++: the goto may not jump over an initialisation: the rest in a block)
     'play_kid_frame': [('\tint8_t o = (int8_t)Kid.opp_index;', '\t{ int8_t o = (int8_t)Kid.opp_index;'), ('done:\n', '\t}\ndone:\n')],
 }
@@ -148,9 +158,12 @@ FILE_PATCHES = {
     # the program's memory image (640 KB) only ever holds the data segment (DS at 0x3B250, 64 KB): keep that only
     'core': [
         ('static uint8_t ram[655360];', 'static uint8_t ram_ds[0x10000];'),
-        ('fread(ram + 0x3B250, 1, 0x27BF, f)', 'fread(ram_ds, 1, 0x27BF, f)'),
+        ('memset(ram + 0x3B250, 0, 0x10000);', 'memset(ram_ds, 0, 0x10000);'),
+        ('version_load_exe(p, ram + 0x3B250)', 'version_load_exe(p, ram_ds)'),
         ('glue_load_ds_tables(ram);', 'glue_load_ds_tables(ram_ds);'),
         ('state_load_ds_statics(ram + 0x3B250);', 'state_load_ds_statics(ram_ds);'),
     ],
     'glue': [('ram + 0x3B250', 'ram'), ('ram[0x3B250 + ', 'ram[')],
+    # an anonymous struct type the declaration splitter cannot name
+    'version': [('static const struct { uint16_t at, n; } ds_pointers[] = {', 'typedef struct { uint16_t at, n; } ds_pointer_t;\nstatic const ds_pointer_t ds_pointers[] = {')],
 }

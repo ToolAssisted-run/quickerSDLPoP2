@@ -25,8 +25,8 @@ OUT = os.path.join(ROOT, 'source', 'quickerSDLPoP2', 'quickerSDLPoP2.hpp')
 # the game logic (what pop2_init, pop2_new_game and pop2_frame reach), in SDLPoP2's order
 LOGIC = ('anim beast blades bridge5 caverns char cheats collision control core dat fight final frame game glue guard '
          'heads hooks input items kid kidctl kind1 kind5 level lever5 mobs room roomhooks ruins seq shadow13 skeleton '
-         'sound spirit state temple tick tiles trap walls').split()   # (text.c: only its state effects, overrides.py)
-HEADERS = 'types globals glue state dat core text settings'.split()
+         'sound spirit state temple tick tiles trap version walls').split()   # (text.c: only its state effects, overrides.py)
+HEADERS = 'types globals glue state dat core text settings version'.split()
 
 # the savestate's layout: state.c's tables in order, then the checkpoint copy (level.c `cp`) and core.c's `scene`
 STATE_EXTRA_TAIL = ['cp', 'scene']
@@ -37,7 +37,9 @@ IDENT = re.compile(r'[A-Za-z_]\w*')
 
 
 def read(name):
-    return open(os.path.join(SRC, name)).read()
+    """A source file, with the local tables it includes (#include "x.inc") put in its place."""
+    text = open(os.path.join(SRC, name)).read()
+    return re.sub(r'^#include "([\w.]+\.inc)"\n', lambda m: open(os.path.join(SRC, m.group(1))).read(), text, flags=re.M)
 
 
 def replace_idents(text, mapping):
@@ -320,7 +322,7 @@ def main():
     file_items = {}
 
     protos = {}   # name -> prototype text (headers and sources), for the stubs
-    # headers: macros and types only
+    # headers: macros, types and their inline functions
     for h in HEADERS:
         for it in csplit.split(read(h + '.h')):
             t = csplit.strip_comments(it.text).strip()
@@ -338,6 +340,13 @@ def main():
                     types.append(it.text)
             elif it.kind == 'decl' and classify_decl(it.text) == 'type':
                 types.append(it.text)
+            elif it.kind == 'func':   # a header's static inline function (version.h bridge_row): a member function too
+                name = re.search(r'([A-Za-z_]\w*)\s*$', t.split('{')[0].split('(')[0]).group(1)
+                text = it.text
+                for a, b in TYPE_PATCHES:   # the names the types renamed (SOUND_DEVICE_ -> POP2_SOUND_DEVICE_)
+                    if a.endswith('_') and b.endswith(a):
+                        text = re.sub(r'\b' + a, b, text)
+                functions.append((h + '.h', name, text))
 
     # sources: split, find the statics that clash between files
     statics = {}
