@@ -25,6 +25,9 @@ public:
     else if (v == "1.0") _gameVersion = 1;
     else if (v == "IR") _gameVersion = 2;
     else JAFFAR_THROW_LOGIC("Game Version '%s' is not 1.1, 1.0 or IR\n", v.c_str());
+    // "Skip Story Scenes" (optional, false): the story scenes between levels skipped by a key, as a TAS does (the sound
+    // stops: after levels 5 and 9 the next level's first tick draws a random number), not watched to their end
+    _skipScenes = config.contains("Skip Story Scenes") ? jaffarCommon::json::getBoolean(config, "Skip Story Scenes") : false;
     _inputParser = std::make_unique<jaffar::InputParser>(config);
   }
 
@@ -55,6 +58,7 @@ protected:
 
   std::string _gamePath;
   int _gameVersion = 0; // POP2_VER_*: 0 1.1, 1 1.0, 2 the initial release
+  bool _skipScenes = false;
 
 private:
 
