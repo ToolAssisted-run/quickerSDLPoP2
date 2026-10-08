@@ -27,9 +27,10 @@ API = r'''
 
   // One game tick: x / y -1..1 (left / up negative), shift 1 Shift or 2 Ctrl, keystroke: a key was pressed,
   // restartLevel: Restart Level (the game's Alt+A: the level starts again, from its checkpoint)
-  void advance(const int8_t x, const int8_t y, const uint8_t shift, const bool keystroke, const bool restartLevel = false)
+  // musicToggle: Music On/Off (the game's Alt+M; switched off, the piece playing stops: the level-end music too)
+  void advance(const int8_t x, const int8_t y, const uint8_t shift, const bool keystroke, const bool restartLevel = false, const bool musicToggle = false)
   {
-    pop2_input in = {x, y, shift, (uint8_t)keystroke, (uint8_t)restartLevel};
+    pop2_input in = {x, y, shift, (uint8_t)keystroke, (uint8_t)restartLevel, (uint8_t)musicToggle};
     pop2_frame(&in);
   }
 

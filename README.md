@@ -23,7 +23,7 @@ You need your own copy of the original game's files (DOS version 1.0).
 
 A savestate is the `QuickerSDLPoP2State` part of the object: 23,448 bytes, byte for byte the same as SDLPoP2's own savestate. `saveState` and `loadState` take jaffarCommon's serializers.
 
-`source/quickerSDLPoP2/quickerInstance.hpp` wraps it for JaffarPlus, with the input strings `|K|LRUDSC|`: K a key pressed, the four directions, S Shift, C Ctrl. R in K's place is Restart Level (the game's own key, Alt+A: the level starts again from its checkpoint).
+`source/quickerSDLPoP2/quickerInstance.hpp` wraps it for JaffarPlus, with the input strings `|K|LRUDSC|`: K a key pressed, the four directions, S Shift, C Ctrl. R in K's place is Restart Level (the game's own key, Alt+A: the level starts again from its checkpoint). M in K's place is Music On/Off (the game's Alt+M: switched off, the piece playing stops, the level-end music too, and the next level loads without waiting for it).
 
 ## How it is made
 
