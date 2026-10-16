@@ -31,7 +31,7 @@ public:
 
   void advanceState(const jaffar::input_t &input) override
   {
-    pop2_input in = {input.x, input.y, input.shift, (uint8_t)input.keystroke, (uint8_t)input.restartLevel};
+    pop2_input in = {input.x, input.y, input.shift, (uint8_t)input.keystroke, (uint8_t)input.restartLevel, (uint8_t)input.musicToggle};
     pop2_frame(&in);
   }
 
