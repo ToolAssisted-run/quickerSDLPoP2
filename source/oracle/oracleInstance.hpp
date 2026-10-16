@@ -24,6 +24,7 @@ public:
     if (pop2_init(_gamePath.c_str()) == 0)
       JAFFAR_THROW_LOGIC("Could not load the game files from '%s'%s%s\n", _gamePath.c_str(), pop2_init_error() ? ": " : "", pop2_init_error() ? pop2_init_error() : "");
     _stateSize = pop2_state_size();
+    pop2_set_skip_scenes(_skipScenes);
   }
 
   void newGame(const int level, const uint32_t seed) override { pop2_new_game(level, seed); }

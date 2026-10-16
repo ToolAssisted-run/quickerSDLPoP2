@@ -18,6 +18,10 @@ API = r'''
   // Why initialize failed when no file was missing (NULL otherwise)
   const char *initError() { return pop2_init_error(); }
 
+  // The story scenes between levels: skipped by a key (as a TAS does: the sound stops, and after levels 5 and 9 the
+  // next level's first tick draws a random number for its ambient sound) or watched to their end (the default)
+  void setSkipScenes(const bool skip) { pop2_set_skip_scenes(skip ? 1 : 0); }
+
   // A new game at the given level (1: the start; 2..14 as the DOS game's LEVELn) with the given random seed
   void newGame(const int lv, const uint32_t seed) { pop2_new_game(lv, seed); }
 

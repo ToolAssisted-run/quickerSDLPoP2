@@ -18,6 +18,7 @@ void hook_pal_rotate(int start, int count);
 void hook_roof_tick(uint8_t tile, int8_t tp, uint16_t m);
 void hook_room_enter(int bg);
 void hook_room_leave(int bg);
+void hook_tile_redraw(uint8_t room, int8_t tp);
 void hook_trob_request(int which, uint16_t arg);
 void hp_bar_clear(void);
 void hp_bar_draw(uint8_t index, int a, uint8_t hp);
